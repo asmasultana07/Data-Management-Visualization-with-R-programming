@@ -1,0 +1,196 @@
+---
+title: "Asma Sultana"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+### Dataset load
+
+ This project will reflect R programming and data science skills as a researcher.
+```{r}
+
+
+mortality = read.csv("Mortality.csv")
+str(mortality)
+
+```
+### 4.Explain the dataset. 
+
+##### In this load dataset, R programming is not showing  numerical column correctly as per as I guess. so generate those   column/feature my own thought.
+
+
+ Numerical columns- age, creatinine_phosphokinase, ejection_fraction, platelets, serum_creatinine, serum_sodium, and time are numerical columns that likely represent   continuous variables.\
+ Categorical columns: anaemia, diabetes, high_blood_pressure, sex, smoking are categorical columns that likely represent      binary or discrete variables.
+ 
+ Target variable: The last column, DEATH_EVENT, is the target variable in the dataset, which likely indicates whether an individual experienced       a death event or not.
+
+```{r}
+numerical_columns = c("age", "creatinine_phosphokinase", "ejection_fraction", "platelets", "serum_creatinine", "serum_sodium", "time")
+numerical_columns
+
+categorical_columns = c("anaemia", "diabetes", "high_blood_pressure", "sex", "smoking")
+categorical_columns
+
+target_variable = "DEATH_EVENT"
+target_variable
+
+```
+
+### 5.Correlation between Numerical feature
+```{r}
+## In this load dataset, R programming not showing numerical column correctly as per as I guess. so generate those  numerical feature my own thought. 
+
+table = data.frame(
+
+  a1= as.numeric(mortality$age),
+  a2= as.numeric(mortality$creatinine_phosphokinase),
+  a3= as.numeric(mortality$ejection_fraction),
+  a4= as.numeric(mortality$platelets),
+  a5= as.numeric(mortality$serum_creatinine),
+  a6= as.numeric(mortality$serum_sodium),
+  a7= as.numeric(mortality$time)
+)  
+table
+```
+
+
+
+#### Correlation numerical feature using loop
+```{r}
+ 
+## A named vector to store correlation coefficients
+correlations = numeric(length = 6)
+
+for (i in 2:7) {
+  correlation = cor(table$a1, table[, i])
+  correlations[i-1] = correlation #store
+}
+
+names(correlations) = c("a1-a2", "a1-a3", "a1-a4","a1-a5", "a1-a6", "a1-a7")
+
+print(correlations)
+```
+
+
+```{r}
+## Find out the strongest correlated feature and weakest correlated feature.
+
+Max = (max(correlations))
+cat(" Strongest correlation -> ", names(which.max(correlations)), ": ", Max, "\n") 
+
+Min = (min(correlations))
+cat(" Weakest correlation -> ", names(which.min(correlations)), ": ", Min, "\n") 
+
+
+
+```
+### 6.Subset for target feature
+```{r}
+
+subset0 = subset(mortality, DEATH_EVENT == 0)
+subset1 = subset(mortality, DEATH_EVENT == 1)
+subset0
+subset1
+```
+#### Summary of all subsets 
+```{r}
+summary(subset0)
+summary(subset1)
+
+```
+
+### Observations
+  Comparing mean, median, min, and max values between subsets can reveal differences in variable distributions.
+  Identifying patterns or trends specific to each subset may indicate factors influencing the target variable.
+  Ensure balance of classes within subsets for better model performance.
+  Further explore subsets using visualizations or additional analyses to understand their relationship with the target variable.
+
+
+
+
+### 8. Determine correlation  for all the subsets
+
+#### Correlation for subset0
+```{r}
+
+table2 = data.frame(
+
+  a1= as.numeric(subset0$age),
+  a2= as.numeric(subset0$creatinine_phosphokinase),
+  a3= as.numeric(subset0$ejection_fraction),
+  a4= as.numeric(subset0$platelets),
+  a5= as.numeric(subset0$serum_creatinine),
+  a6= as.numeric(subset0$serum_sodium),
+  a7= as.numeric(subset0$time)
+)  
+table2
+
+
+correlations = numeric(length = 6)
+
+for (i in 2:7) {
+  correlation = cor(table2$a1, table2[, i])
+  correlations[i-1] = correlation #store
+}
+
+names(correlations) = c("a1-a2", "a1-a3", "a1-a4","a1-a5", "a1-a6", "a1-a7")
+
+print(correlations)
+
+
+
+Max0 = (max(correlations))
+cat("\n Strongest correlation for subset0 -> ", names(which.max(correlations)), ": ", Max0, "\n") 
+
+Min0 = (min(correlations))
+cat(" Weakest correlation for subset0 -> ", names(which.min(correlations)), ": ", Min0, "\n") 
+
+
+```
+
+#### Correlation for subset0
+```{r}
+
+table3 = data.frame(
+
+  a1= as.numeric(subset1$age),
+  a2= as.numeric(subset1$creatinine_phosphokinase),
+  a3= as.numeric(subset1$ejection_fraction),
+  a4= as.numeric(subset1$platelets),
+  a5= as.numeric(subset1$serum_creatinine),
+  a6= as.numeric(subset1$serum_sodium),
+  a7= as.numeric(subset1$time)
+)  
+table3
+
+
+correlations = numeric(length = 6)
+
+for (i in 2:7) {
+  correlation = cor(table3$a1, table3[, i])
+  correlations[i-1] = correlation #store
+}
+
+names(correlations) = c("a1-a2", "a1-a3", "a1-a4", "a1-a5", "a1-a6", "a1-a7")
+
+print(correlations)
+
+
+
+Max1 = (max(correlations))
+cat("\n Strongest correlation for subset1 -> ", names(which.max(correlations)), ": ", Max1, "\n") 
+
+Min1 = (min(correlations))
+cat(" Weakest correlation for subset1 -> ", names(which.min(correlations)), ": ", Min1, "\n") 
+
+
+
+```
+### Observations
+My observations are as follows as:
+  a. In the overall dataset, the strongest correlation is between variables a1(age) and a5(serum_creatinine)) with a correlation coefficient of 0.1591871. The weakest correlation is between variables a1(age) and a7(time) with a correlation coefficient of -0.2240684.
+  b. When considering subset0 of the data, the strongest correlation is still between variables a1(age) and a5(serum_creatinine)) with a correlation coefficient of 0.1375893. The weakest correlation within subset0 is between variables a1(age) and a4(platelets) with a correlation coefficient of -0.1086949. 
+  c. For subset1 of the data, the strongest correlation is between variables a1(age) and a3(ejection_fraction) with a correlation coefficient of 0.216885. The weakest correlation within subset1 is between variables a1(age) and a7(time) with a correlation coefficient of -0.1876158.

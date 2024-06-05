@@ -1,0 +1,243 @@
+---
+title: "PROJECT02"
+output: html_document
+---
+
+
+## Data Visualization
+
+```{r}
+mortality = read.csv("Mortality.csv")
+```
+
+```{r}
+str(mortality)
+```
+```{r}
+#death = seq(1, 299)
+#death
+
+```
+```{r}
+mortality$DEATH = NA
+head(mortality)
+```
+```{r}
+mortality$DEATH[mortality$DEATH_EVENT == 0] = 'no'
+mortality$DEATH[mortality$DEATH_EVENT == 1] = 'yes'
+mortality
+```
+## Box plot
+```{r}
+library(ggplot2)
+
+ggplot(data = mortality, aes(x = DEATH, y= age, fill = DEATH)) + 
+  geom_boxplot() +
+  scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+  labs(title = "Box plot of mortality dataset", y = "Age", x = "Death_Event") + 
+  theme_minimal()
+
+
+```
+```{r}
+
+
+col_names= names(mortality)
+
+for (col in col_names) {
+  if (col == "DEATH") next
+
+  p = ggplot(mortality, aes(x =!!sym("DEATH"), y = !!sym(col), fill = "DEATH")) +
+    geom_boxplot() +
+    scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+    labs(title = "Box plot of Mortality dataset",x = "Death", y = col ) + 
+  
+    theme_minimal()
+  
+  print(p)
+}
+```
+
+```{r}
+## for all column
+
+col_names= names(mortality)
+
+for (col in col_names) {
+  if (col == "DEATH") next
+
+  p = ggplot(mortality, aes_string(x = "DEATH", y = col, fill = "DEATH")) +
+    geom_boxplot() +
+    scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+    labs(title = "Box plot of Mortality dataset",x = "Death", y = col ) + 
+  
+    theme_minimal()
+  
+  print(p)
+}
+
+
+```
+
+## Violin Plot
+```{r}
+ggplot(data = mortality, aes(x = DEATH, y= age, fill = DEATH)) + 
+  geom_violin()+ 
+  scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+  labs(title = "Violin Plot of Mortality dataset", y = "Age", x = "Death") + 
+  theme_minimal()
+
+
+```
+
+```{r}
+## for all column
+
+col_names= names(mortality)
+
+for (col in col_names) {
+  if (col == "DEATH") next
+
+  q = ggplot(mortality, aes_string(x = "DEATH", y = col, fill = "DEATH")) +
+     geom_violin()+
+    scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+    labs(title = "Violin Plot of Mortality dataset",x = "Death", y = col ) + 
+  
+    theme_minimal()
+  
+  print(q)
+}
+
+```
+
+## scale point
+```{r}
+ggplot(data = mortality, aes(x = DEATH, y = age, color = DEATH)) + 
+  geom_point() +
+  scale_color_manual(values = c("no" = "purple", "yes" = "pink"))+ 
+
+  theme_minimal()
+
+```
+```{r}
+ggplot(data = mortality, aes(x =  anaemia, y = age, color = DEATH)) + 
+  geom_point() +
+  scale_color_manual(values = c("no" = "purple", "yes" = "pink"))+ 
+
+  theme_minimal()
+```
+
+```{r}
+## for all column
+
+col_names= names(mortality)
+
+for (col in col_names) {
+  if (col == "DEATH") next
+
+  r = ggplot(mortality, aes_string(x = col, y = "age", color = "DEATH")) +
+     geom_point() +
+    scale_color_manual(values = c("no" = "purple", "yes" = "pink")) + 
+    labs(title = "Scale Point of Mortality dataset",y = "age", x = col ) + 
+  
+    theme_minimal()
+  
+  print(r)
+}
+
+```
+
+##
+```{r}
+summary(mortality)
+
+```
+## Bar Count
+```{r}
+ggplot(data = mortality, aes(x = DEATH, fill = DEATH) ) + 
+  geom_bar() +
+  scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+  theme_minimal()
+```
+```{r}
+ggplot(data = mortality, aes(x = "", fill = DEATH)) + 
+  geom_bar(stat = "count") + 
+  coord_polar(theta = "y") +
+  scale_fill_manual(values = c("no" = "purple", "yes" = "pink")) + 
+  theme_minimal()
+
+```
+
+## Heat map
+
+```{r}
+cor_ma = cor(mortality[ ,1:5])
+cor_ma
+
+```
+```{r}
+library(ggcorrplot)
+
+ggcorrplot(cor_ma)
+
+ggcorrplot(cor_ma, type="lower",colors = c("pink" , "skyblue"))
+
+ggcorrplot(cor_ma, type="upper",colors = c("pink" , "skyblue"))
+
+ggcorrplot(cor_ma, type="lower", lab = TRUE, colors = c("pink" , "skyblue"))
+
+ggcorrplot(cor_ma, type="upper", lab = TRUE, colors = c("pink" , "skyblue"))
+
+```
+## comparing time
+```{r}
+
+ggplot(mortality, aes(x = time, y = age, color = DEATH)) + 
+  geom_line() + theme_minimal()
+```
+
+```{r}
+ggplot(mortality, aes(x = time)) + 
+  geom_histogram(fill = "blue", color="purple", binwidth = 0.80)
+
+```
+## Pairwise Plots
+```{r}
+library(GGally)
+
+ggpairs(mortality[ , 1:14], aes(color=DEATH))
+
+```
+
+```{r}
+mortality_violin =   ggplot(data = mortality, aes(x = DEATH, y=age, fill = DEATH)) + 
+  geom_violin()+ 
+  labs(title = "Pairwise Plots", y = "age", x = "DEATH") + 
+  theme_minimal()
+
+mortality_violin
+```
+
+### interactive graph
+```{r}
+library(plotly)
+
+ggplotly(mortality_violin)
+```
+```{r}
+scatter_mortality = ggplot(data = mortality, aes(x = ejection_fraction , y=age, color = DEATH)) + 
+  geom_point() +
+  theme_minimal()
+
+ggplotly(scatter_mortality)
+```
+
+```{r}
+library(ggplot2)
+mortality_line = ggplot(mortality, aes(x = time, y = age, color = DEATH)) + 
+ geom_line() +
+  theme_minimal()
+
+ggplotly(mortality_line)
+```
+
